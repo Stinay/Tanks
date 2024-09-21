@@ -2,18 +2,23 @@
 This is a prototype of the game 'Tanks' that I developed myself using Gradle and the Processing library for my Java assignment in the unit
 COMP9003 Object-Oriented Programming at USYD.
 
-- Move left (key: leftarrow)
-- Move left (key: leftarrow)
+| Keyboard input | Action                                   |
+|----------------|------------------------------------------|
+| UP arrow       | Tank turret moves left                   |
+| DOWN arrow     | Tank turret moves right                  |
+| LEFT arrow     | Tank moves left across terrain           |
+| RIGHT arrow    | Tank moves right across terrain          |
+| W              | Turret power increases                   |
+| S              | Turret power decreases                   |
+| SPACEBAR       | Fire a projectile (ends turn)            |
+| r              | Repair kit, cost: 20                     |
+| f              | Additional fuel, cost: 10                |
+| p              | Additional parachute, cost: 15           |
+| x              | Larger projectile, cost: 20              |
+| h              | Shield, cost: 20                         |
+| t              | Teleport, cost: 15                       |
+| r              | Restart the game.                        |
 
-| Keyboard input | Action                                  |
-|----------------|-----------------------------------------|
-| UP arrow       | Tank turret moves left                  |
-| DOWN arrow     | Tank turret moves right                 |
-| LEFT arrow     | Tank moves left across terrain          |
-| RIGHT arrow    | Tank moves right across terrain         |
-| W              | Turret power increases                  |
-| S              | Turret power decreases                  |
-| SPACEBAR       | Fire a projectile (ends turn)           |
 
 
 
