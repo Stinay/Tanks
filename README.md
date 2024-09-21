@@ -5,10 +5,16 @@ COMP9003 Object-Oriented Programming at USYD.
 - Move left (key: leftarrow)
 - Move left (key: leftarrow)
 
-| Action | Keyboard input |
-| --------------- | --------------- |
-| Tank turret moves left  | UP arrow |
-| Tank turret moves right  | DOWN arrow  |
+| Keyboard input | Action                                  |
+|----------------|-----------------------------------------|
+| UP arrow       | Tank turret moves left                  |
+| DOWN arrow     | Tank turret moves right                 |
+| LEFT arrow     | Tank moves left across terrain          |
+| RIGHT arrow    | Tank moves right across terrain         |
+| W              | Turret power increases                  |
+| S              | Turret power decreases                  |
+| SPACEBAR       | Fire a projectile (ends turn)           |
+
 
 
 
