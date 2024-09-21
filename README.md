@@ -1,6 +1,5 @@
 # Tanks
-This is a prototype of the game 'Tanks' that I developed myself using Gradle and the Processing library for my Java assignment in the unit
-COMP9003 Object-Oriented Programming at USYD.
+This is a prototype of the game 'Tanks' that I developed myself using Gradle and the Processing library for my Java assignment at USYD.
 
 | Keyboard input | Action                                   |
 |----------------|------------------------------------------|
