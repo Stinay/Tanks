@@ -36,4 +36,4 @@ COMP9003 Object-Oriented Programming at USYD.
 <img width="531" alt="Screenshot 2024-09-21 at 7 58 48 PM" src="https://github.com/user-attachments/assets/756db42e-59c7-4471-96a2-a78b926c54fc">
 
 ### Shield
-<img width="877" alt="Screenshot 2024-09-21 at 7 59 39 PM" src="https://github.com/user-attachments/assets/3d856f38-4a6c-4ff5-b1f3-34170a467e77">
+<img width="531" alt="Screenshot 2024-09-21 at 8 12 08 PM" src="https://github.com/user-attachments/assets/15dceda8-a897-46f8-b353-62ee711f6e18">
