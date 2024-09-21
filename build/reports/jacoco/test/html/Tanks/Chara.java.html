@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Chara.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tanks_scaffold</a> &gt; <a href="index.source.html" class="el_package">Tanks</a> &gt; <span class="el_source">Chara.java</span></div><h1>Chara.java</h1><pre class="source lang-java linenums">package Tanks;
+
+/**
+ * The Chara class represents a character in the game.
+ */
+public class Chara {
+    protected int xCor;
+    protected int yCor;
+    protected Character chara;
+    protected float x;
+    protected float y;
+
+    /**
+     * Constructs a Chara object with the specified coordinates and character.
+     *
+     * @param xCor  the x-coordinate of the character
+     * @param yCor  the y-coordinate of the character
+     * @param chara the character representation
+     */
+<span class="nc" id="L20">    public Chara(int xCor, int yCor, Character chara) {</span>
+<span class="nc" id="L21">        this.xCor = xCor;</span>
+<span class="nc" id="L22">        this.yCor = yCor;</span>
+<span class="nc" id="L23">        this.chara = chara;</span>
+<span class="nc" id="L24">        this.x = xCor * 32;</span>
+<span class="nc" id="L25">        this.y = (float) yCor * 32;</span>
+<span class="nc" id="L26">    }</span>
+
+    /**
+     * Returns the character representation.
+     *
+     * @return the character representation
+     */
+    public Character getCharacter() {
+<span class="nc" id="L34">        return this.chara;</span>
+    }
+
+    /**
+     * Returns the x-coordinate of the character.
+     *
+     * @return the x-coordinate of the character
+     */
+    public float getX() {
+<span class="nc" id="L43">        return this.x;</span>
+    }
+
+    /**
+     * Returns the y-coordinate of the character.
+     *
+     * @return the y-coordinate of the character
+     */
+    public float getY() {
+<span class="nc" id="L52">        return this.y;</span>
+    }
+
+    /**
+     * Sets the x-coordinate of the character.
+     *
+     * @param x the new x-coordinate of the character
+     */
+    public void setX(float x) {
+<span class="nc" id="L61">        this.x = x;</span>
+<span class="nc" id="L62">    }</span>
+
+    /**
+     * Sets the y-coordinate of the character.
+     *
+     * @param y the new y-coordinate of the character
+     */
+    public void setY(float y) {
+<span class="nc" id="L70">        this.y = y;</span>
+<span class="nc" id="L71">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

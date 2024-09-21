@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TerrainColumn.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tanks_scaffold</a> &gt; <a href="index.source.html" class="el_package">Tanks</a> &gt; <span class="el_source">TerrainColumn.java</span></div><h1>TerrainColumn.java</h1><pre class="source lang-java linenums">package Tanks;
+
+
+import java.util.ArrayList;
+
+
+/**
+ * Represents a terrain column in the game.
+ */
+public class TerrainColumn extends Chara {
+
+    private int[] terrainRGB;
+    private ArrayList&lt;TerrainPixelLine&gt; lines;
+
+    /**
+     * Constructs a TerrainColumn object.
+     *
+     * @param xCor  The x-coordinate of the terrain column.
+     * @param yCor  The y-coordinate of the terrain column.
+     * @param chara The character associated with the terrain column.
+     * @param RGB   The RGB values for the terrain column.
+     */
+    public TerrainColumn(int xCor, int yCor, Character chara, int[] RGB) {
+<span class="nc" id="L24">        super(xCor, yCor, chara);</span>
+<span class="nc" id="L25">        float pcolHeight = 640 - y;</span>
+<span class="nc" id="L26">        this.terrainRGB = RGB;</span>
+
+<span class="nc" id="L28">        this.lines = new ArrayList&lt;TerrainPixelLine&gt;();</span>
+
+<span class="nc bnc" id="L30" title="All 2 branches missed.">        for (int i = 0; i &lt; 32; i++) {</span>
+<span class="nc" id="L31">            lines.add(new TerrainPixelLine(xCor * 32 + i, pcolHeight, terrainRGB));</span>
+        }
+<span class="nc" id="L33">    }</span>
+
+
+    /**
+     * Gets the terrain pixel lines associated with the terrain column.
+     *
+     * @return The terrain pixel lines.
+     */
+    public ArrayList&lt;TerrainPixelLine&gt; getTerrainPixelLines() {
+<span class="nc" id="L42">        return this.lines;</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Wind.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tanks_scaffold</a> &gt; <a href="index.source.html" class="el_package">Tanks</a> &gt; <span class="el_source">Wind.java</span></div><h1>Wind.java</h1><pre class="source lang-java linenums">package Tanks;
+
+import processing.core.PApplet;
+import processing.core.PImage;
+
+import java.util.Random;
+
+
+public class Wind {
+    private PImage windImageLeft;
+    private PImage windImageRight;
+    private final static int WIND_WIDTH = 50;
+    private final static int WIND_HEIGHT = 50;
+    private int windSpeed;
+    private Random random;
+
+    /**
+     * Constructs a Wind object with the given wind images.
+     *
+     * @param windImageLeft  The image for left wind direction.
+     * @param windImageRight The image for right wind direction.
+     */
+<span class="nc" id="L23">    public Wind(PImage windImageLeft, PImage windImageRight) {</span>
+<span class="nc" id="L24">        random = new Random();</span>
+<span class="nc" id="L25">        windSpeed = random.nextInt(71) - 35;</span>
+<span class="nc" id="L26">        this.windImageLeft = windImageLeft;</span>
+<span class="nc" id="L27">        this.windImageRight = windImageRight;</span>
+<span class="nc" id="L28">    }</span>
+
+    /**
+     * Updates the wind speed.
+     */
+    public void updateWind() {
+<span class="nc" id="L34">        windSpeed += random.nextInt(11) - 5;</span>
+<span class="nc" id="L35">    }</span>
+
+    /**
+     * Gets the wind speed per frame.
+     *
+     * @return The wind speed per frame.
+     */
+    public int getWindSpeedPerFrame() {
+<span class="nc" id="L43">        return (int) (windSpeed * 0.03 / 30);</span>
+    }
+
+    /**
+     * Draws the wind on the screen.
+     *
+     * @param app The PApplet object to draw on.
+     */
+    public void draw(PApplet app) {
+<span class="nc" id="L52">        app.textSize(18);</span>
+
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        if (windSpeed &lt; 0) {</span>
+<span class="nc" id="L55">            app.image(windImageLeft, app.width - 100, 0, WIND_WIDTH, WIND_HEIGHT);</span>
+<span class="nc" id="L56">            app.fill(0, 0, 0);</span>
+<span class="nc" id="L57">            app.text(-(int) windSpeed, app.width - 43, 31);</span>
+        } else {
+<span class="nc" id="L59">            app.image(windImageRight, app.width - 100, 0, WIND_WIDTH, WIND_HEIGHT);</span>
+<span class="nc" id="L60">            app.fill(0, 0, 0);</span>
+<span class="nc" id="L61">            app.text(windSpeed, app.width - 43, 31);</span>
+        }
+<span class="nc" id="L63">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

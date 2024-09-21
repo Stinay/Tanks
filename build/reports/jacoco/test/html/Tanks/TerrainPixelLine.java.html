@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TerrainPixelLine.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tanks_scaffold</a> &gt; <a href="index.source.html" class="el_package">Tanks</a> &gt; <span class="el_source">TerrainPixelLine.java</span></div><h1>TerrainPixelLine.java</h1><pre class="source lang-java linenums">package Tanks;
+
+import processing.core.PApplet;
+
+
+/**
+ * Represents a single line of terrain pixels.
+ */
+public class TerrainPixelLine {
+
+    private int x;
+    private float y;
+    private final static int COL_WIDTH = 1;
+    private float colHeight;
+    private int[] terrainRGB;
+    private Tree tree;
+
+    /**
+     * Constructs a TerrainPixelLine object.
+     *
+     * @param x          the x-coordinate of the line
+     * @param colHeight  the height of the line
+     * @param terrainRGB the RGB values of the line's color
+     */
+<span class="nc" id="L25">    public TerrainPixelLine(int x, float colHeight, int[] terrainRGB) {</span>
+<span class="nc" id="L26">        this.x = x;</span>
+<span class="nc" id="L27">        this.colHeight = colHeight;</span>
+<span class="nc" id="L28">        this.y = 640 - colHeight;</span>
+<span class="nc" id="L29">        this.terrainRGB = terrainRGB;</span>
+<span class="nc" id="L30">    }</span>
+
+    /**
+     * Sets the height of the line.
+     *
+     * @param height the new height of the line
+     */
+    public void setColHeight(float height) {
+<span class="nc" id="L38">        this.colHeight = height;</span>
+<span class="nc" id="L39">    }</span>
+
+    /**
+     * Sets the y-coordinate of the line.
+     *
+     * @param y the new y-coordinate of the line
+     */
+    public void setY(float y) {
+<span class="nc" id="L47">        this.y = y;</span>
+<span class="nc" id="L48">    }</span>
+
+    /**
+     * Returns the height of the line.
+     *
+     * @return the height of the line
+     */
+    public float getColHeight() {
+<span class="nc" id="L56">        return this.colHeight;</span>
+    }
+
+    /**
+     * Returns the y-coordinate of the line.
+     *
+     * @return the y-coordinate of the line
+     */
+    public float getY() {
+<span class="nc" id="L65">        return this.y;</span>
+    }
+
+    /**
+     * Returns the x-coordinate of the line.
+     *
+     * @return the x-coordinate of the line
+     */
+    public int getX() {
+<span class="nc" id="L74">        return this.x;</span>
+    }
+
+    /**
+     * Sets the tree associated with the line.
+     *
+     * @param tree the tree object to be associated with the line
+     */
+    public void setTree(Tree tree) {
+<span class="nc" id="L83">        this.tree = tree;</span>
+<span class="nc" id="L84">        this.tree.setX(this.x - 16);</span>
+<span class="nc" id="L85">        this.tree.setY(this.y - 29);</span>
+<span class="nc" id="L86">    }</span>
+
+    /**
+     * Returns the tree associated with the line.
+     *
+     * @return the tree associated with the line
+     */
+    public Tree getTree() {
+<span class="nc" id="L94">        return this.tree;</span>
+    }
+
+    /**
+     * Draws the terrain line on the screen.
+     *
+     * @param app the PApplet object used for drawing
+     */
+    public void draw(PApplet app) {
+<span class="nc" id="L103">        app.noStroke();</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        if (terrainRGB != null) {</span>
+<span class="nc" id="L105">            app.fill(terrainRGB[0], terrainRGB[1], terrainRGB[2]);</span>
+        }
+<span class="nc" id="L107">        app.rect(x, y, COL_WIDTH, colHeight);</span>
+<span class="nc" id="L108">    }</span>
+
+    /**
+     * Draws the tree associated with the line on the screen.
+     *
+     * @param app the PApplet object used for drawing
+     */
+    public void drawTree(PApplet app) {
+<span class="nc bnc" id="L116" title="All 2 branches missed.">        if (this.tree != null) {</span>
+<span class="nc" id="L117">            app.image(this.tree.getTreeImage(), x - 16, y - 29);</span>
+        }
+<span class="nc" id="L119">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

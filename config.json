@@ -1,0 +1,43 @@
+{
+  "levels": [
+    {
+      "layout": "level1.txt",
+      "background": "snow.png",
+      "foreground-colour": "255,255,255",
+      "trees": "tree2.png"
+    },
+    {
+      "layout": "level2.txt",
+      "background": "desert.png",
+      "foreground-colour": "234,221,181"
+    },
+    {
+      "layout": "level3.txt",
+      "background": "basic.png",
+      "foreground-colour": "120,171,0",
+      "trees": "tree1.png"
+    }
+  ],
+  "player_colours": {
+    "A": "0,0,255",
+    "B": "255,0,0",
+    "C": "0,255,255",
+    "D": "255,255,0",
+    "E": "0,255,0",
+    "F": "random",
+    "G": "random",
+    "H": "random",
+    "I": "random",
+    "0": "0,0,0",
+    "1": "0,0,0",
+    "2": "0,0,0",
+    "3": "0,0,0",
+    "4": "0,0,0",
+    "5": "0,0,0",
+    "6": "0,0,0",
+    "7": "0,0,0",
+    "8": "0,0,0",
+    "9": "0,0,0"
+  }
+}
+

@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Level.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tanks_scaffold</a> &gt; <a href="index.source.html" class="el_package">Tanks</a> &gt; <span class="el_source">Level.java</span></div><h1>Level.java</h1><pre class="source lang-java linenums">package Tanks;
+
+import processing.core.PImage;
+import processing.core.PApplet;
+
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.TreeMap;
+import java.util.HashMap;
+
+
+/**
+ * Represents a level in the Tanks game.
+ */
+public class Level {
+
+    private Chara[][] layout;
+    private int[] foregroundColor;
+    private PImage backgroundImage;
+    private PImage treeImage;
+    private final static int BACKGROUND_WIDTH = 864;
+    private final static int BACKGROUND_HEIGHT = 640;
+    private final static int CHARA_WIDTH = 32;
+    private final static int CHARA_HEIGHT = 32;
+    private TerrainColumn[] terrain;
+    private ArrayList&lt;TerrainPixelLine&gt; pixelLines;
+    private ArrayList&lt;Tree&gt; treesList;
+    private TreeMap&lt;String, Tank&gt; humanPlayers;
+    private TreeMap&lt;String, Tank&gt; aiPlayers;
+    private ArrayList&lt;Projectile&gt; projectiles;
+<span class="nc" id="L31">    private int numOfProjectiles = 0;</span>
+
+    private ArrayList&lt;Character&gt; playerCharacters;
+    private HashMap&lt;Character, Tank&gt; players;
+<span class="nc" id="L35">    private int currentPlayerIndex = 0;</span>
+    private Tank currentPlayer;
+    private int totalPlayerNum;
+    private PImage parachuteImage;
+<span class="nc" id="L39">    private boolean isLevelOver = false;</span>
+<span class="nc" id="L40">    private int levelEndCounter = 0;</span>
+
+
+    /**
+     * Constructs a Level object.
+     *
+     * @param layout          the layout of the level
+     * @param foregroundColor the foreground color of the level
+     * @param backgroundImage the background image of the level
+     * @param treeImage       the tree image of the level
+     * @param parachuteImage  the parachute image of the level
+     */
+<span class="nc" id="L52">    public Level(Chara[][] layout, int[] foregroundColor, PImage backgroundImage, PImage treeImage, PImage parachuteImage) {</span>
+<span class="nc" id="L53">        this.layout = layout;</span>
+<span class="nc" id="L54">        this.foregroundColor = foregroundColor;</span>
+<span class="nc" id="L55">        this.backgroundImage = backgroundImage;</span>
+<span class="nc" id="L56">        this.backgroundImage.resize(BACKGROUND_WIDTH, BACKGROUND_HEIGHT);</span>
+<span class="nc" id="L57">        this.treeImage = treeImage;</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">        if (treeImage != null) {</span>
+<span class="nc" id="L59">            this.treeImage.resize(CHARA_WIDTH, CHARA_HEIGHT);</span>
+        }
+<span class="nc" id="L61">        this.terrain = new TerrainColumn[28];</span>
+<span class="nc" id="L62">        this.pixelLines = new ArrayList&lt;TerrainPixelLine&gt;();</span>
+<span class="nc" id="L63">        this.treesList = new ArrayList&lt;Tree&gt;();</span>
+<span class="nc" id="L64">        this.humanPlayers = new TreeMap&lt;String, Tank&gt;();</span>
+<span class="nc" id="L65">        this.aiPlayers = new TreeMap&lt;String, Tank&gt;();</span>
+<span class="nc" id="L66">        this.projectiles = new ArrayList&lt;Projectile&gt;();</span>
+<span class="nc" id="L67">        this.players = new HashMap&lt;Character, Tank&gt;();</span>
+<span class="nc" id="L68">        this.playerCharacters = new ArrayList&lt;Character&gt;();</span>
+<span class="nc" id="L69">        this.parachuteImage = parachuteImage;</span>
+<span class="nc" id="L70">    }</span>
+
+    /**
+     * Prints the layout of the level.
+     */
+    public void getLayout() {
+<span class="nc bnc" id="L76" title="All 2 branches missed.">        for (int i = 0; i &lt; layout.length; i++) {</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">            for (int j = 0; j &lt; layout[i].length; j++) {</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">                if (layout[i][j] != null) {</span>
+<span class="nc" id="L79">                    System.out.print(layout[i][j].getCharacter());</span>
+                }
+            }
+<span class="nc" id="L82">            System.out.println();</span>
+        }
+<span class="nc" id="L84">    }</span>
+
+    /**
+     * Creates the terrain of the level.
+     */
+    public void createTerrain() {
+<span class="nc bnc" id="L90" title="All 2 branches missed.">        for (int i = 0; i &lt; layout.length; i++) {</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">            for (int j = 0; j &lt; layout[i].length; j++) {</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">                if (layout[i][j] != null) {</span>
+<span class="nc" id="L93">                    Character chara = layout[i][j].getCharacter();</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">                    if (chara == 'X') {</span>
+<span class="nc" id="L95">                        terrain[j] = new TerrainColumn(j, i, 'X', this.foregroundColor);</span>
+                    }
+                }
+            }
+        }
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        for (int i = 0; i &lt; terrain.length; i++) {</span>
+<span class="nc bnc" id="L101" title="All 4 branches missed.">            if (this.pixelLines != null &amp;&amp; terrain[i].getTerrainPixelLines() != null) {</span>
+<span class="nc" id="L102">                this.pixelLines.addAll(terrain[i].getTerrainPixelLines());</span>
+            }
+        }
+<span class="nc" id="L105">    }</span>
+
+    /**
+     * Smooths the terrain of the level.
+     *
+     * @return true if the terrain was smoothed, false otherwise
+     */
+    public boolean smoothTerrain() {
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        if (pixelLines != null) {</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">            for (int i = 0; i &lt; pixelLines.size() - 32; i++) {</span>
+<span class="nc" id="L115">                float heightSum = 0;</span>
+<span class="nc bnc" id="L116" title="All 4 branches missed.">                for (int j = i + 1; j &lt; i + 1 + 32 &amp;&amp; j &lt; pixelLines.size(); j++) {</span>
+<span class="nc" id="L117">                    heightSum = heightSum + pixelLines.get(j).getColHeight();</span>
+                }
+<span class="nc" id="L119">                float movingAverage = heightSum / 32;</span>
+<span class="nc" id="L120">                pixelLines.get(i).setColHeight(movingAverage);</span>
+<span class="nc" id="L121">                pixelLines.get(i).setY(640 - movingAverage);</span>
+            }
+<span class="nc" id="L123">            return true;</span>
+        }
+<span class="nc" id="L125">        return false;</span>
+    }
+
+    /**
+     * Returns the pixel lines of the level.
+     *
+     * @return the pixel lines
+     */
+    public ArrayList&lt;TerrainPixelLine&gt; getPixelLines() {
+<span class="nc" id="L134">        return this.pixelLines;</span>
+    }
+
+    /**
+     * Sets the pixel lines of the level.
+     *
+     * @param pixelLines the pixel lines to set
+     */
+    public void setPixelLines(ArrayList&lt;TerrainPixelLine&gt; pixelLines) {
+<span class="nc" id="L143">        this.pixelLines = pixelLines;</span>
+<span class="nc" id="L144">    }</span>
+
+    /**
+     * Creates the trees in the level.
+     */
+    public void createTree() {
+<span class="nc bnc" id="L150" title="All 2 branches missed.">        for (int i = 0; i &lt; layout.length; i++) {</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">            for (int j = 0; j &lt; layout[i].length; j++) {</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">                if (layout[i][j] != null) {</span>
+<span class="nc" id="L153">                    Character chara = layout[i][j].getCharacter();</span>
+<span class="nc bnc" id="L154" title="All 4 branches missed.">                    if (chara == 'T' &amp;&amp; this.treeImage != null) {</span>
+<span class="nc" id="L155">                        Tree tree = new Tree(j, i, 'T', this.treeImage);</span>
+<span class="nc" id="L156">                        resetTreePosition(tree);</span>
+<span class="nc" id="L157">                        setTreePixelRange(tree);</span>
+<span class="nc" id="L158">                        tree.setRandomPosition();</span>
+<span class="nc" id="L159">                        this.treesList.add(tree);</span>
+                    }
+                }
+            }
+        }
+<span class="nc" id="L164">    }</span>
+
+    /**
+     * Resets the position of a tree in the level.
+     *
+     * @param tree the tree to reset the position of
+     */
+    public void resetTreePosition(Tree tree) {
+<span class="nc bnc" id="L172" title="All 2 branches missed.">        if (tree != null) {</span>
+<span class="nc" id="L173">            float plX = 0;</span>
+<span class="nc" id="L174">            float plY = 0;</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">            for (int i = 0; i &lt; this.pixelLines.size(); i++) {</span>
+<span class="nc" id="L176">                plX = (float) pixelLines.get(i).getX();</span>
+<span class="nc" id="L177">                plY = pixelLines.get(i).getY();</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">                if (plX == tree.getX()) {</span>
+<span class="nc" id="L179">                    tree.setY(plY);</span>
+<span class="nc" id="L180">                    break;</span>
+                }
+            }
+        }
+<span class="nc" id="L184">    }</span>
+
+    /**
+     * Sets the pixel range of a tree in the level.
+     *
+     * @param tree the tree to set the pixel range of
+     */
+    public void setTreePixelRange(Tree tree) {
+<span class="nc bnc" id="L192" title="All 4 branches missed.">        if (this.pixelLines == null || tree == null) {</span>
+<span class="nc" id="L193">            return;</span>
+        } else {
+<span class="nc" id="L195">            float treeX = tree.getX();</span>
+<span class="nc" id="L196">            float treeY = tree.getY();</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">            for (int i = 0; i &lt; this.pixelLines.size() - 32; i++) {</span>
+<span class="nc" id="L198">                float plX = this.pixelLines.get(i).getX();</span>
+<span class="nc" id="L199">                float plY = this.pixelLines.get(i).getY();</span>
+<span class="nc" id="L200">                float distance = (float) Math.sqrt((plX - treeX) * (plX - treeX) + (plY - treeY) * (plY - treeY));</span>
+<span class="nc bnc" id="L201" title="All 2 branches missed.">                if (distance &lt;= 15) {</span>
+<span class="nc" id="L202">                    tree.addTreeRange(this.pixelLines.get(i));</span>
+                }
+            }
+        }
+<span class="nc" id="L206">    }</span>
+
+    /**
+     * Resets the position of a tank in the level.
+     *
+     * @param tank the tank to reset the position of
+     */
+    public void resetTankPosition(Tank tank) {
+<span class="nc bnc" id="L214" title="All 2 branches missed.">        if (tank != null) {</span>
+<span class="nc" id="L215">            float plX = 0;</span>
+<span class="nc" id="L216">            float plY = 0;</span>
+<span class="nc bnc" id="L217" title="All 2 branches missed.">            for (int i = 0; i &lt; this.pixelLines.size(); i++) {</span>
+<span class="nc" id="L218">                plX = (float) pixelLines.get(i).getX();</span>
+<span class="nc" id="L219">                plY = pixelLines.get(i).getY();</span>
+<span class="nc bnc" id="L220" title="All 2 branches missed.">                if (plX == tank.getX()) {</span>
+<span class="nc" id="L221">                    tank.setX(plX - 10);</span>
+<span class="nc" id="L222">                    tank.setY(plY);</span>
+<span class="nc" id="L223">                    break;</span>
+                }
+            }
+        }
+<span class="nc" id="L227">    }</span>
+
+    /**
+     * Loads the initial tanks in the level.
+     *
+     * @param humanPlayerColours the colors of the human players
+     * @param aiPlayerColours    the colors of the AI players
+     */
+    public void loadInitialTank(TreeMap&lt;String, int[]&gt; humanPlayerColours, TreeMap&lt;String, int[]&gt; aiPlayerColours) {
+<span class="nc bnc" id="L236" title="All 2 branches missed.">        for (int i = 0; i &lt; layout.length; i++) {</span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">            for (int j = 0; j &lt; layout[i].length; j++) {</span>
+<span class="nc bnc" id="L238" title="All 2 branches missed.">                if (layout[i][j] != null) {</span>
+<span class="nc" id="L239">                    Character chara = layout[i][j].getCharacter();</span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">                    if (String.valueOf(chara).matches(&quot;.*[a-iA-I].*&quot;)) {</span>
+<span class="nc" id="L241">                        int[] RGB = humanPlayerColours.get(String.valueOf(chara));</span>
+<span class="nc" id="L242">                        Tank humanTank = new Tank(j, i, chara, RGB, true);</span>
+<span class="nc" id="L243">                        this.resetTankPosition(humanTank);</span>
+<span class="nc" id="L244">                        humanTank.setPixelLines(this.pixelLines);</span>
+<span class="nc" id="L245">                        humanPlayers.put(String.valueOf(chara), humanTank);</span>
+<span class="nc bnc" id="L246" title="All 2 branches missed.">                    } else if (String.valueOf(chara).matches(&quot;\\d+&quot;)) {</span>
+<span class="nc" id="L247">                        int[] RGB = aiPlayerColours.get(String.valueOf(chara));</span>
+<span class="nc" id="L248">                        Tank aiTank = new Tank(j, i, chara, RGB, false);</span>
+<span class="nc" id="L249">                        this.resetTankPosition(aiTank);</span>
+<span class="nc" id="L250">                        aiTank.setPixelLines(this.pixelLines);</span>
+<span class="nc" id="L251">                        aiPlayers.put(String.valueOf(chara), aiTank);</span>
+                    }
+                }
+            }
+        }
+<span class="nc" id="L256">    }</span>
+
+    /**
+     * Creates the player list for the level.
+     */
+    public void createPlayerList() {
+<span class="nc" id="L262">        this.currentPlayerIndex = 0;</span>
+<span class="nc" id="L263">        playerCharacters = new ArrayList&lt;Character&gt;();</span>
+<span class="nc" id="L264">        humanPlayers.keySet().forEach(key -&gt; {</span>
+<span class="nc" id="L265">            Tank t = humanPlayers.get(key);</span>
+<span class="nc" id="L266">            t.initializeParachute(this.parachuteImage);</span>
+<span class="nc" id="L267">            players.put(t.getCharacter(), t);</span>
+<span class="nc" id="L268">            playerCharacters.add(t.getCharacter());</span>
+<span class="nc" id="L269">        });</span>
+<span class="nc" id="L270">        aiPlayers.keySet().forEach(key -&gt; {</span>
+<span class="nc" id="L271">            Tank t = aiPlayers.get(key);</span>
+<span class="nc" id="L272">            t.initializeParachute(parachuteImage);</span>
+<span class="nc" id="L273">            players.put(t.getCharacter(), t);</span>
+<span class="nc" id="L274">            playerCharacters.add(t.getCharacter());</span>
+<span class="nc" id="L275">        });</span>
+<span class="nc" id="L276">        char currentPlayerChara = playerCharacters.get(currentPlayerIndex);</span>
+<span class="nc" id="L277">        this.currentPlayer = players.get(currentPlayerChara);</span>
+<span class="nc" id="L278">        this.totalPlayerNum = playerCharacters.size();</span>
+<span class="nc" id="L279">    }</span>
+
+    /**
+     * Returns the index of the current player.
+     *
+     * @return the current player index
+     */
+    public int getCurrentPlayerIndex() {
+<span class="nc" id="L287">        return this.currentPlayerIndex;</span>
+    }
+
+    /**
+     * Returns the current player.
+     *
+     * @return the current player
+     */
+    public Tank getCurrentPlayer() {
+<span class="nc" id="L296">        return this.currentPlayer;</span>
+    }
+
+    /**
+     * Returns the list of player characters.
+     *
+     * @return the player characters
+     */
+    public ArrayList&lt;Character&gt; getPlayerCharacters() {
+<span class="nc" id="L305">        return this.playerCharacters;</span>
+    }
+
+    /**
+     * Returns the map of players.
+     *
+     * @return the players
+     */
+    public HashMap&lt;Character, Tank&gt; getPlayers() {
+<span class="nc" id="L314">        return this.players;</span>
+    }
+
+    /**
+     * Returns the map of human players.
+     *
+     * @return the human players
+     */
+    public TreeMap&lt;String, Tank&gt; getHumanPlayers() {
+<span class="nc" id="L323">        return this.humanPlayers;</span>
+    }
+
+    /**
+     * Returns the map of AI players.
+     *
+     * @return the AI players
+     */
+    public TreeMap&lt;String, Tank&gt; getAIPlayers() {
+<span class="nc" id="L332">        return this.aiPlayers;</span>
+    }
+
+    /**
+     * Adds a projectile to the level.
+     *
+     * @param projectile the projectile to add
+     */
+    public void addProjectile(Projectile projectile) {
+<span class="nc" id="L341">        this.projectiles.add(projectile);</span>
+<span class="nc" id="L342">        this.numOfProjectiles++;</span>
+<span class="nc" id="L343">    }</span>
+
+    /**
+     * Checks if the level is over.
+     *
+     * @return true if the level is over, false otherwise
+     */
+    public boolean isLevelOver() {
+<span class="nc" id="L351">        return this.isLevelOver;</span>
+    }
+
+    /**
+     * Draws the level.
+     *
+     * @param app the PApplet object to draw on
+     */
+    public void draw(PApplet app) {
+        // Draw background
+<span class="nc" id="L361">        app.image(this.backgroundImage, 0, 0);</span>
+
+        // Draw terrain
+<span class="nc bnc" id="L364" title="All 2 branches missed.">        for (int i = 0; i &lt; pixelLines.size(); i++) {</span>
+<span class="nc" id="L365">            this.pixelLines.get(i).draw(app);</span>
+        }
+
+        // Draw Tree on terrain
+<span class="nc bnc" id="L369" title="All 2 branches missed.">        for (int i = 0; i &lt; pixelLines.size(); i++) {</span>
+<span class="nc" id="L370">            this.pixelLines.get(i).drawTree(app);</span>
+        }
+
+<span class="nc" id="L373">        int countDie = 0;</span>
+<span class="nc bnc" id="L374" title="All 2 branches missed.">        for (Tank t : players.values()) {</span>
+<span class="nc bnc" id="L375" title="All 2 branches missed.">            if (t.isAlive()) {</span>
+<span class="nc" id="L376">                t.tick();</span>
+<span class="nc" id="L377">                t.draw(app);</span>
+<span class="nc" id="L378">                t.checkPosition(app);</span>
+            } else {
+<span class="nc" id="L380">                t.drawTankExplosion(app);</span>
+<span class="nc bnc" id="L381" title="All 2 branches missed.">                if (t.isExploded()) {</span>
+<span class="nc" id="L382">                    countDie++;</span>
+                }
+            }
+<span class="nc" id="L385">        }</span>
+
+<span class="nc bnc" id="L387" title="All 2 branches missed.">        if (countDie == totalPlayerNum - 1) {</span>
+<span class="nc" id="L388">            levelEndCounter++;</span>
+<span class="nc bnc" id="L389" title="All 2 branches missed.">            if (levelEndCounter == 2) {</span>
+<span class="nc" id="L390">                this.isLevelOver = true;</span>
+            }
+        }
+
+<span class="nc bnc" id="L394" title="All 2 branches missed.">        if (this.isLevelOver == false){</span>
+        // Draw projectiles
+<span class="nc bnc" id="L396" title="All 2 branches missed.">            for (int i = 0; i &lt; this.numOfProjectiles; i++) {</span>
+<span class="nc" id="L397">                Projectile p = this.projectiles.get(i);</span>
+<span class="nc bnc" id="L398" title="All 2 branches missed.">                if (!p.isExploded()) {</span>
+<span class="nc" id="L399">                    p.tick(app);</span>
+<span class="nc bnc" id="L400" title="All 4 branches missed.">                    if (p.isCollided() &amp;&amp; !p.isExploded()) {</span>
+<span class="nc bnc" id="L401" title="All 2 branches missed.">                        for (String key : humanPlayers.keySet()) {</span>
+<span class="nc" id="L402">                            humanPlayers.get(key).checkDamage(p, app);</span>
+<span class="nc" id="L403">                        }</span>
+<span class="nc bnc" id="L404" title="All 2 branches missed.">                        for (String key : aiPlayers.keySet()) {</span>
+<span class="nc" id="L405">                            aiPlayers.get(key).checkDamage(p, app);</span>
+<span class="nc" id="L406">                        }</span>
+<span class="nc" id="L407">                        p.explode();</span>
+                    }
+<span class="nc" id="L409">                    p.updatePixelLines();</span>
+<span class="nc bnc" id="L410" title="All 2 branches missed.">                    if (p.getTank().isAlive()) {</span>
+<span class="nc" id="L411">                        p.draw(app);</span>
+                    }
+                }
+<span class="nc" id="L414">                p.drawExplosion(app);</span>
+            }
+        }
+<span class="nc" id="L417">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

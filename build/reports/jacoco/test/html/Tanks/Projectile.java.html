@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Projectile.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tanks_scaffold</a> &gt; <a href="index.source.html" class="el_package">Tanks</a> &gt; <span class="el_source">Projectile.java</span></div><h1>Projectile.java</h1><pre class="source lang-java linenums">package Tanks;
+
+import processing.core.*;
+
+import java.util.*;
+
+
+/**
+ * Represents a projectile in the Tanks game.
+ */
+public class Projectile {
+    private float x;
+    private float y;
+    private float xVel;
+    private float yVel;
+    private int[] RGB;
+    private ArrayList&lt;TerrainPixelLine&gt; pixelLines;
+    private boolean isCollided;
+    private boolean isExploded;
+    private Level level;
+    private final static float GRAVITY = 7.2f / 30;
+<span class="nc" id="L22">    private float windSpeed = 0.0f;</span>
+    private final static int WIDTH = 8;
+    private final static int RADIUS = 4;
+    private Tank tank;
+
+<span class="nc" id="L27">    private int explosionRadius = 30;</span>
+
+    private int collisionTime;
+
+    /**
+     * Constructs a Projectile object.
+     *
+     * @param x    the x-coordinate of the projectile
+     * @param y    the y-coordinate of the projectile
+     * @param RGB  the RGB color values of the projectile
+     * @param tank the tank that fired the projectile
+     */
+<span class="nc" id="L39">    public Projectile(float x, float y, int[] RGB, Tank tank) {</span>
+<span class="nc" id="L40">        this.x = x;</span>
+<span class="nc" id="L41">        this.y = y;</span>
+<span class="nc" id="L42">        this.RGB = RGB;</span>
+<span class="nc" id="L43">        this.xVel = 0;</span>
+<span class="nc" id="L44">        this.yVel = 0;</span>
+<span class="nc" id="L45">        this.isCollided = false;</span>
+<span class="nc" id="L46">        this.isExploded = false;</span>
+<span class="nc" id="L47">        this.tank = tank;</span>
+<span class="nc" id="L48">    }</span>
+
+    /**
+     * Sets the level for the projectile.
+     *
+     * @param level the level object
+     */
+    public void setLevel(Level level) {
+<span class="nc" id="L56">        this.level = level;</span>
+<span class="nc" id="L57">        this.pixelLines = level.getPixelLines();</span>
+<span class="nc" id="L58">    }</span>
+
+    /**
+     * Fires the projectile with the given velocities.
+     *
+     * @param xVel the x-velocity of the projectile
+     * @param yVel the y-velocity of the projectile
+     */
+    public void fire(float xVel, float yVel) {
+<span class="nc" id="L67">        this.xVel = xVel;</span>
+<span class="nc" id="L68">        this.yVel = yVel;</span>
+<span class="nc" id="L69">    }</span>
+
+    /**
+     * Checks if the projectile has collided with any terrain or gone out of bounds.
+     *
+     * @param app the PApplet object
+     * @return true if the projectile has collided, false otherwise
+     */
+    public boolean checkCollided(PApplet app) {
+        // Check if the projectile is out of the valid area first
+<span class="nc bnc" id="L79" title="All 6 branches missed.">        if (this.x &lt; -32 || this.x &gt; 896 || this.y &gt; 672) {</span>
+<span class="nc" id="L80">            this.isCollided = true;</span>
+<span class="nc" id="L81">            this.collisionTime = app.millis();</span>
+<span class="nc" id="L82">            System.out.println(&quot;Projectile is out of bounds!&quot;);</span>
+<span class="nc" id="L83">            return isCollided;</span>
+        }
+
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        for (TerrainPixelLine pixelLine : pixelLines) {</span>
+<span class="nc" id="L87">            float px = pixelLine.getX();</span>
+<span class="nc" id="L88">            float py = pixelLine.getY();</span>
+
+<span class="nc" id="L90">            float distance1 = (float) Math.sqrt((px - this.x) * (px - this.x) + (py - this.y) * (py - this.y));</span>
+<span class="nc" id="L91">            float distance2 = (float) Math.sqrt((px - this.x) * (px - this.x) + (py - this.y) * (py - this.y) - 16);</span>
+
+<span class="nc" id="L93">            float tolerance1 = 0.2f;</span>
+
+<span class="nc bnc" id="L95" title="All 2 branches missed.">            if (distance1 &lt;= RADIUS + tolerance1) {</span>
+<span class="nc" id="L96">                this.isCollided = true;</span>
+<span class="nc" id="L97">                this.x = px;</span>
+<span class="nc" id="L98">                this.y = py;</span>
+<span class="nc" id="L99">                this.collisionTime = app.millis();</span>
+<span class="nc" id="L100">                return isCollided;</span>
+<span class="nc bnc" id="L101" title="All 6 branches missed.">            } else if (distance2 &lt;= RADIUS + tolerance1 &amp;&amp; Math.abs(this.y - py) &gt;= 4 &amp;&amp; Math.abs(this.y - py) &lt; 6) {</span>
+<span class="nc" id="L102">                this.isCollided = true;</span>
+<span class="nc" id="L103">                this.x = px;</span>
+<span class="nc" id="L104">                this.y = py;</span>
+<span class="nc" id="L105">                this.collisionTime = app.millis();</span>
+<span class="nc" id="L106">                return isCollided;</span>
+            }
+<span class="nc" id="L108">        }</span>
+
+<span class="nc" id="L110">        return isCollided;</span>
+    }
+
+    /**
+     * Explodes the projectile, modifying the terrain if necessary.
+     */
+    public void explode() {
+<span class="nc bnc" id="L117" title="All 2 branches missed.">        if (!this.isCollided) {</span>
+<span class="nc" id="L118">            return;</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        } else if (this.isExploded) {</span>
+<span class="nc" id="L120">            return;</span>
+        }
+
+<span class="nc" id="L123">        int outerLeftX = (int) this.x - explosionRadius;</span>
+<span class="nc" id="L124">        int outerRightX = (int) this.x + explosionRadius;</span>
+<span class="nc" id="L125">        float outerLeftY = 0.0f;</span>
+<span class="nc" id="L126">        float outerRightY = 0.0f;</span>
+
+<span class="nc" id="L128">        int touchLeftX = 0;</span>
+<span class="nc" id="L129">        int touchRightX = 0;</span>
+<span class="nc" id="L130">        float touchLeftY = 0.0f;</span>
+<span class="nc" id="L131">        float touchRightY = 0.0f;</span>
+
+<span class="nc" id="L133">        int tolerance1 = 1;</span>
+<span class="nc" id="L134">        int tolerance2 = 3;</span>
+
+        // Find touching pixels and set outer boundary Y values
+<span class="nc bnc" id="L137" title="All 2 branches missed.">        for (TerrainPixelLine pixelLine : pixelLines) {</span>
+<span class="nc" id="L138">            int px = pixelLine.getX();</span>
+<span class="nc" id="L139">            float py = pixelLine.getY();</span>
+<span class="nc" id="L140">            double distance = Math.sqrt((px - this.x) * (px - this.x) + (py - this.y) * (py - this.y));</span>
+
+<span class="nc bnc" id="L142" title="All 2 branches missed.">            if (px == outerLeftX) {</span>
+<span class="nc" id="L143">                outerLeftY = py;</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">            } else if (px == outerRightX) {</span>
+<span class="nc" id="L145">                outerRightY = py;</span>
+            }
+
+<span class="nc bnc" id="L148" title="All 4 branches missed.">            if ((distance &gt;= explosionRadius - tolerance1 &amp;&amp; distance &lt;= explosionRadius + tolerance1</span>
+<span class="nc bnc" id="L149" title="All 6 branches missed.">                    &amp;&amp; Math.abs(this.y - py) &lt;= tolerance1 * 2)</span>
+                    || (distance &gt;= explosionRadius - tolerance2 &amp;&amp; distance &lt;= explosionRadius + tolerance2
+<span class="nc bnc" id="L151" title="All 2 branches missed.">                    &amp;&amp; Math.abs(this.y - py) &gt; tolerance1 * 2)) {</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">                if (px &lt; this.x) {</span>
+<span class="nc" id="L153">                    touchLeftX = px;</span>
+<span class="nc" id="L154">                    touchLeftY = py;</span>
+<span class="nc bnc" id="L155" title="All 2 branches missed.">                } else if (px &gt; this.x) {</span>
+<span class="nc" id="L156">                    touchRightX = px;</span>
+<span class="nc" id="L157">                    touchRightY = py;</span>
+                }
+            } 
+            // if (touchLeftX !=0 &amp;&amp; touchRightX != 0) {
+            //     break;
+            // }
+
+<span class="nc" id="L164">        }</span>
+
+<span class="nc bnc" id="L166" title="All 2 branches missed.">        for (TerrainPixelLine pixelLine : pixelLines) {</span>
+<span class="nc" id="L167">            int px = pixelLine.getX();</span>
+<span class="nc" id="L168">            float py = pixelLine.getY();</span>
+
+<span class="nc bnc" id="L170" title="All 14 branches missed.">            if ((px &gt;= outerLeftX &amp;&amp; px &lt;= touchLeftX &amp;&amp; outerLeftY &lt;= this.y &amp;&amp; Math.abs(this.x - px) &lt;= explosionRadius)</span>
+                    || (px &gt;= touchRightX &amp;&amp; px &lt;= outerRightX &amp;&amp; outerRightY &lt;= this.y
+<span class="nc bnc" id="L172" title="All 2 branches missed.">                    &amp;&amp; Math.abs(this.x - px) &lt;= explosionRadius)) {</span>
+<span class="nc" id="L173">                float distanceDiff = (float) Math.sqrt(explosionRadius * explosionRadius - (this.x - px) * (this.x - px));</span>
+<span class="nc" id="L174">                float newHeight = py + distanceDiff * 2;</span>
+<span class="nc" id="L175">                pixelLine.setY(newHeight);</span>
+<span class="nc" id="L176">                pixelLine.setColHeight(640 - newHeight);</span>
+<span class="nc bnc" id="L177" title="All 6 branches missed.">            } else if (px &gt;= touchLeftX &amp;&amp; px &lt;= touchRightX &amp;&amp; Math.abs(this.x - px) &lt;= explosionRadius) {</span>
+<span class="nc" id="L178">                float newHeight = this.y + (float) Math.sqrt((float)explosionRadius * explosionRadius - (float)(this.x - px) * (this.x - px));</span>
+<span class="nc" id="L179">                pixelLine.setY(newHeight);</span>
+<span class="nc" id="L180">                pixelLine.setColHeight(640 - newHeight);</span>
+            }
+<span class="nc" id="L182">        }</span>
+
+<span class="nc" id="L184">        this.isExploded = true;</span>
+<span class="nc" id="L185">    }</span>
+
+    /**
+     * Updates the pixel lines in the level.
+     */
+    public void updatePixelLines() {
+<span class="nc" id="L191">        this.level.setPixelLines(this.pixelLines);</span>
+<span class="nc" id="L192">    }</span>
+
+    /**
+     * Updates the state of the projectile.
+     *
+     * @param app the PApplet object
+     */
+    public void tick(PApplet app) {
+<span class="nc bnc" id="L200" title="All 2 branches missed.">        if (!this.isCollided) {</span>
+<span class="nc" id="L201">            this.x += this.xVel;</span>
+<span class="nc" id="L202">            this.y -= this.yVel;</span>
+<span class="nc" id="L203">            this.yVel -= GRAVITY;</span>
+<span class="nc" id="L204">            this.xVel += windSpeed;</span>
+<span class="nc" id="L205">            this.checkCollided(app);</span>
+        } else {
+<span class="nc" id="L207">            this.xVel = 0;</span>
+<span class="nc" id="L208">            this.yVel = 0;</span>
+        }
+<span class="nc" id="L210">    }</span>
+
+    /**
+     * Checks if the projectile has collided with terrain.
+     *
+     * @return true if the projectile has collided, false otherwise
+     */
+    public boolean isCollided() {
+<span class="nc" id="L218">        return this.isCollided;</span>
+    }
+
+    /**
+     * Checks if the projectile has exploded.
+     *
+     * @return true if the projectile has exploded, false otherwise
+     */
+    public boolean isExploded() {
+<span class="nc" id="L227">        return this.isExploded;</span>
+    }
+
+    /**
+     * Updates the wind speed.
+     *
+     * @param windSpeed the new wind speed
+     */
+    public void updateWindSpeed(float windSpeed) {
+<span class="nc" id="L236">        this.windSpeed = windSpeed;</span>
+<span class="nc" id="L237">    }</span>
+
+    /**
+     * Sets the x-coordinate of the projectile.
+     *
+     * @param x the new x-coordinate
+     */
+    public void setX(float x) {
+<span class="nc" id="L245">        this.x = x;</span>
+<span class="nc" id="L246">    }</span>
+
+    /**
+     * Sets the y-coordinate of the projectile.
+     *
+     * @param y the new y-coordinate
+     */
+    public void setY(float y) {
+<span class="nc" id="L254">        this.y = y;</span>
+<span class="nc" id="L255">    }</span>
+
+    /**
+     * Gets the x-coordinate of the projectile.
+     *
+     * @return the x-coordinate
+     */
+    public float getX() {
+<span class="nc" id="L263">        return this.x;</span>
+    }
+
+    /**
+     * Gets the y-coordinate of the projectile.
+     *
+     * @return the y-coordinate
+     */
+    public float getY() {
+<span class="nc" id="L272">        return this.y;</span>
+    }
+
+    /**
+     * Gets the tank that fired the projectile.
+     *
+     * @return the tank object
+     */
+    public Tank getTank() {
+<span class="nc" id="L281">        return this.tank;</span>
+    }
+
+    /**
+     * Draws the explosion of the projectile.
+     *
+     * @param app the PApplet object
+     */
+    public void drawExplosion(PApplet app) {
+<span class="nc bnc" id="L290" title="All 2 branches missed.">        if (this.isCollided) {</span>
+<span class="nc" id="L291">            int duration = 200;</span>
+<span class="nc" id="L292">            float maxRedRadius = explosionRadius;</span>
+<span class="nc" id="L293">            float maxOrangeRadius = explosionRadius * 0.5f;</span>
+<span class="nc" id="L294">            float maxYellowRadius = explosionRadius * 0.2f;</span>
+
+<span class="nc" id="L296">            int elapsedTime = app.millis() - this.collisionTime;</span>
+
+<span class="nc bnc" id="L298" title="All 2 branches missed.">            if (elapsedTime &lt;= duration) {</span>
+<span class="nc" id="L299">                float redRadius = PApplet.map(elapsedTime, 0, duration, 0, maxRedRadius);</span>
+<span class="nc" id="L300">                float orangeRadius = PApplet.map(elapsedTime, 0, duration, 0, maxOrangeRadius);</span>
+<span class="nc" id="L301">                float yellowRadius = PApplet.map(elapsedTime, 0, duration, 0, maxYellowRadius);</span>
+
+<span class="nc" id="L303">                app.fill(255, 0, 0);</span>
+<span class="nc" id="L304">                app.ellipse(this.x, this.y, redRadius * 2, redRadius * 2);</span>
+
+<span class="nc" id="L306">                app.fill(255, 165, 0);</span>
+<span class="nc" id="L307">                app.ellipse(this.x, this.y, orangeRadius * 2, orangeRadius * 2);</span>
+
+<span class="nc" id="L309">                app.fill(255, 255, 0);</span>
+<span class="nc" id="L310">                app.ellipse(this.x, this.y, yellowRadius * 2, yellowRadius * 2);</span>
+            }
+        }
+<span class="nc" id="L313">    }</span>
+
+    /**
+     * Sets the explosion radius of the projectile.
+     *
+     * @param explosionRadius the new explosion radius
+     */
+    public void setExplosionRadius(int explosionRadius) {
+<span class="nc" id="L321">        this.explosionRadius = explosionRadius;</span>
+<span class="nc" id="L322">    }</span>
+
+    /**
+     * Gets the explosion radius of the projectile.
+     *
+     * @return the explosion radius
+     */
+    public int getExplosionRadius() {
+<span class="nc" id="L330">        return this.explosionRadius;</span>
+    }
+
+    /**
+     * Draws the projectile on the screen.
+     *
+     * @param app the PApplet object
+     */
+    public void draw(PApplet app) {
+<span class="nc" id="L339">        app.fill(RGB[0], RGB[1], RGB[2]);</span>
+<span class="nc" id="L340">        app.ellipse(this.x, this.y, WIDTH, WIDTH);</span>
+
+<span class="nc" id="L342">        app.fill(0, 0, 0);</span>
+<span class="nc" id="L343">        app.ellipse(this.x, this.y, 2, 2);</span>
+<span class="nc" id="L344">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

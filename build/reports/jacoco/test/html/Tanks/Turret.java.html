@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Turret.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tanks_scaffold</a> &gt; <a href="index.source.html" class="el_package">Tanks</a> &gt; <span class="el_source">Turret.java</span></div><h1>Turret.java</h1><pre class="source lang-java linenums">package Tanks;
+
+import processing.core.PApplet;
+import static java.lang.Math.PI;
+
+
+/**
+ * The Turret class represents a turret in a tank game.
+ */
+<span class="nc" id="L10">public class Turret {</span>
+    private final static int TURRET_WIDTH = 4;
+    private final static int TURRET_HEIGHT = 15;
+<span class="nc" id="L13">    private final static int[] RGB = new int[]{0, 0, 0};</span>
+    private float x;
+    private float y;
+<span class="nc" id="L16">    private float radian = (float) 0;</span>
+<span class="nc" id="L17">    private float radianVel = 0;</span>
+
+    /**
+     * Sets the x-coordinate of the turret.
+     *
+     * @param x the x-coordinate to set
+     */
+    public void setX(float x) {
+<span class="nc" id="L25">        this.x = x;</span>
+<span class="nc" id="L26">    }</span>
+
+    /**
+     * Sets the y-coordinate of the turret.
+     *
+     * @param y the y-coordinate to set
+     */
+    public void setY(float y) {
+<span class="nc" id="L34">        this.y = y;</span>
+<span class="nc" id="L35">    }</span>
+
+    /**
+     * Gets the x-coordinate of the turret.
+     *
+     * @return the x-coordinate
+     */
+    public float getX() {
+<span class="nc" id="L43">        return this.x;</span>
+    }
+
+    /**
+     * Gets the y-coordinate of the turret.
+     *
+     * @return the y-coordinate
+     */
+    public float getY() {
+<span class="nc" id="L52">        return this.y;</span>
+    }
+
+    /**
+     * Gets the width of the turret.
+     *
+     * @return the width
+     */
+    public int getWidth() {
+<span class="nc" id="L61">        return TURRET_WIDTH;</span>
+    }
+
+    /**
+     * Gets the height of the turret.
+     *
+     * @return the height
+     */
+    public int getHeight() {
+<span class="nc" id="L70">        return TURRET_HEIGHT;</span>
+    }
+
+    /**
+     * Rotates the turret to the left.
+     */
+    public void rotateLeft() {
+<span class="nc" id="L77">        this.radianVel = -3;</span>
+<span class="nc" id="L78">    }</span>
+
+    /**
+     * Rotates the turret to the right.
+     */
+    public void rotateRight() {
+<span class="nc" id="L84">        this.radianVel = 3;</span>
+<span class="nc" id="L85">    }</span>
+
+    /**
+     * Stops the rotation of the turret.
+     */
+    public void stopRotation() {
+<span class="nc" id="L91">        this.radianVel = 0;</span>
+<span class="nc" id="L92">    }</span>
+
+    /**
+     * Gets the current radian value of the turret.
+     *
+     * @return the radian value
+     */
+    public float getRadian() {
+<span class="nc" id="L100">        return this.radian;</span>
+    }
+
+    /**
+     * Updates the turret's rotation based on the radian velocity.
+     */
+    public void tick() {
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        if (this.radian &lt; -PI / 2) {</span>
+<span class="nc" id="L108">            this.radian = (float) -PI / 2;</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        } else if (this.radian &gt; PI / 2) {</span>
+<span class="nc" id="L110">            this.radian = (float) PI / 2;</span>
+        }
+<span class="nc" id="L112">        this.radian += radianVel / 30;</span>
+<span class="nc" id="L113">    }</span>
+
+    /**
+     * Draws the turret on the given PApplet.
+     *
+     * @param app the PApplet to draw on
+     */
+    public void draw(PApplet app) {
+<span class="nc" id="L121">        app.pushMatrix(); // Save the current transformation matrix</span>
+
+<span class="nc" id="L123">        app.translate(x + (float) TURRET_WIDTH / 2, y + 15); // Move the origin to the center of the turret</span>
+<span class="nc" id="L124">        app.rotate(this.radian);</span>
+
+<span class="nc" id="L126">        app.fill(RGB[0], RGB[1], RGB[2]);</span>
+<span class="nc" id="L127">        app.rect(-(float) TURRET_WIDTH / 2, -(float) TURRET_HEIGHT / 2 - 8, TURRET_WIDTH, TURRET_HEIGHT); // Draw the turret centered at the new origin</span>
+
+<span class="nc" id="L129">        app.popMatrix(); // Restore the previous transformation matrix</span>
+<span class="nc" id="L130">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

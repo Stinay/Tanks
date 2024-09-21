@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Tree.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tanks_scaffold</a> &gt; <a href="index.source.html" class="el_package">Tanks</a> &gt; <span class="el_source">Tree.java</span></div><h1>Tree.java</h1><pre class="source lang-java linenums">package Tanks;
+
+import processing.core.PImage;
+
+import java.util.Random;
+import java.util.ArrayList;
+
+
+/**
+ * Represents a tree character in the game.
+ */
+public class Tree extends Chara {
+
+    private PImage treeImage;
+    private ArrayList&lt;TerrainPixelLine&gt; terrainPixelLines;
+    private TerrainPixelLine treePixelLine;
+<span class="nc" id="L17">    public static Random random = new Random();</span>
+
+    /**
+     * Constructs a Tree object with the specified coordinates, character, and tree image.
+     *
+     * @param xCor      The x-coordinate of the tree.
+     * @param yCor      The y-coordinate of the tree.
+     * @param chara     The character associated with the tree.
+     * @param treeImage The image representing the tree.
+     */
+    public Tree(int xCor, int yCor, Character chara, PImage treeImage) {
+<span class="nc" id="L28">        super(xCor, yCor, chara);</span>
+<span class="nc" id="L29">        this.treeImage = treeImage;</span>
+<span class="nc" id="L30">        this.terrainPixelLines = new ArrayList&lt;TerrainPixelLine&gt;();</span>
+<span class="nc" id="L31">    }</span>
+
+    /**
+     * Adds a terrain pixel line to the tree's range.
+     *
+     * @param tpl The terrain pixel line to add.
+     */
+    public void addTreeRange(TerrainPixelLine tpl) {
+<span class="nc" id="L39">        this.terrainPixelLines.add(tpl);</span>
+<span class="nc" id="L40">    }</span>
+
+    /**
+     * Sets a random position for the tree based on the available terrain pixel lines.
+     */
+    public void setRandomPosition() {
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        if (this.terrainPixelLines.size() != 0) {</span>
+<span class="nc" id="L47">            int randomBound = this.terrainPixelLines.size();</span>
+<span class="nc" id="L48">            int randomIndex = random.nextInt(randomBound);</span>
+<span class="nc" id="L49">            this.treePixelLine = this.terrainPixelLines.get(randomIndex);</span>
+<span class="nc" id="L50">            this.x = treePixelLine.getX() - 16;</span>
+<span class="nc" id="L51">            this.y = treePixelLine.getY() - 29;</span>
+<span class="nc" id="L52">            this.treePixelLine.setTree(this);</span>
+        }
+<span class="nc" id="L54">    }</span>
+
+    /**
+     * Gets the image representing the tree.
+     *
+     * @return The tree image.
+     */
+    public PImage getTreeImage() {
+<span class="nc" id="L62">        return this.treeImage;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

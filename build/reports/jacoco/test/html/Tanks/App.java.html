@@ -1,0 +1,696 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>App.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">tanks_scaffold</a> &gt; <a href="index.source.html" class="el_package">Tanks</a> &gt; <span class="el_source">App.java</span></div><h1>App.java</h1><pre class="source lang-java linenums">package Tanks;
+
+import processing.core.PApplet;
+import processing.core.PImage;
+import processing.data.JSONArray;
+import processing.data.JSONObject;
+import processing.event.KeyEvent;
+import processing.event.MouseEvent;
+
+import java.util.*;
+
+/**
+ * The main class that represents the game application.
+ * Extends the PApplet class from the Processing library.
+ */
+public class App extends PApplet {
+
+    public static final int CELL_SIZE = 32; //8;
+    public static final int CELL_HEIGHT = 32;
+
+    public static final int CELL_AVG = 32;
+    public static final int TOPBAR = 0;
+<span class="fc" id="L23">    public static int WIDTH = 864; // CELL_SIZE * BOARD_WIDTH;</span>
+<span class="fc" id="L24">    public static int HEIGHT = 640; // BOARD_HEIGHT * CELL_SIZE + TOPBAR;</span>
+<span class="fc" id="L25">    public static final int BOARD_WIDTH = WIDTH / CELL_SIZE;</span>
+    public static final int BOARD_HEIGHT = 20;
+
+    public static final int INITIAL_PARACHUTES = 1;
+
+    public static final int FPS = 30;
+
+    public static final String CONFIG_PATH = &quot;config.json&quot;;
+
+<span class="fc" id="L34">    public static Random random = new Random();</span>
+
+    // Feel free to add any additional methods or attributes you want. Please put classes in different files.
+    private Tank tank;
+    private int numOfTurn;
+<span class="fc" id="L39">    private int currentTurn = 0;</span>
+
+    private ArrayList&lt;Character&gt; playerCharacters;
+    private HashMap&lt;Character, Tank&gt; players;
+<span class="fc" id="L43">    private int currentPlayerIndex = 0;</span>
+    private Tank currentPlayer;
+    private int totalPlayerNum;
+    private int currentPlayerStartTime;
+
+    private Wind wind;
+    private PImage parachuteImage;
+    private PImage fuelImage;
+    private PImage windImageLeft;
+    private PImage windImageRight;
+
+
+    private Level[] levelArray;
+
+<span class="fc" id="L57">    private boolean isGameOver = false;</span>
+
+<span class="fc" id="L59">    private int lastUpdateTime = 0;</span>
+
+    // Class-level variable to keep track of which player's score is currently displayed
+<span class="fc" id="L62">    private int displayedPlayerCount = 0;</span>
+
+    /**
+     * Constructs a new App instance, initializing game components and settings.
+     */
+<span class="fc" id="L67">    public App() {</span>
+        // Construct objects here
+<span class="fc" id="L69">    }</span>
+
+    /**
+     * Initialise the setting of the window size.
+     */
+    @Override
+    public void settings() {
+<span class="nc" id="L76">        size(WIDTH, HEIGHT);</span>
+<span class="nc" id="L77">    }</span>
+
+    /**
+     * Load all resources such as images. Initialise the elements such as the player and map elements.
+     */
+    @Override
+    public void setup() {
+<span class="nc" id="L84">        frameRate(FPS); // how many frames per second</span>
+<span class="nc" id="L85">        JSONObject configObj = loadJSONObject(CONFIG_PATH);</span>
+<span class="nc" id="L86">        Config config = new Config(configObj);</span>
+<span class="nc" id="L87">        JSONArray levels = config.getLevels();</span>
+
+<span class="nc" id="L89">        this.numOfTurn = levels.size();</span>
+<span class="nc" id="L90">        this.levelArray = new Level[numOfTurn];</span>
+
+<span class="nc" id="L92">        this.parachuteImage = loadImage(&quot;src/main/resources/Tanks/parachute.png&quot;);</span>
+
+        // Get human tank colours
+<span class="nc" id="L95">        config.getPlayerColours();</span>
+<span class="nc" id="L96">        TreeMap&lt;String, int[]&gt; tankRGB = config.getHumanPlayerColours();</span>
+        // Get AI tank colours
+<span class="nc" id="L98">        TreeMap&lt;String, int[]&gt; aiRGB = config.getAIPlayerColours();</span>
+
+<span class="nc" id="L100">        this.parachuteImage = loadImage(&quot;src/main/resources/Tanks/parachute.png&quot;);</span>
+<span class="nc" id="L101">        this.wind = new Wind(this.loadImage(&quot;src/main/resources/Tanks/wind-1.png&quot;), this.loadImage(&quot;src/main/resources/Tanks/wind.png&quot;));</span>
+<span class="nc" id="L102">        this.fuelImage = loadImage(&quot;src/main/resources/Tanks/fuel.png&quot;);</span>
+<span class="nc" id="L103">        this.windImageLeft = loadImage(&quot;src/main/resources/Tanks/wind-1.png&quot;);</span>
+<span class="nc" id="L104">        this.windImageRight = loadImage(&quot;src/main/resources/Tanks/wind.png&quot;);</span>
+
+
+<span class="nc" id="L107">        this.players = new HashMap&lt;Character, Tank&gt;();</span>
+
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        for (int i = 0; i &lt; levelArray.length; i++) {</span>
+            // Load background image
+<span class="nc" id="L111">            String backgroundPath = config.getBackgroundPath(i);</span>
+<span class="nc" id="L112">            PImage background = loadImage(backgroundPath);</span>
+
+            // Create characters matrix
+<span class="nc" id="L115">            Chara[][] layout = config.getLevelLayout(i);</span>
+
+<span class="nc" id="L117">            int[] foregroundRGB = config.getLevelForegorundRGB(i);</span>
+
+            // Get tree image
+<span class="nc" id="L120">            String treePath = config.getTreePath(i);</span>
+<span class="nc" id="L121">            PImage tree = null;</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">            if (treePath != null) {</span>
+<span class="nc" id="L123">                tree = loadImage(treePath);</span>
+            }
+
+
+            // Create level
+<span class="nc" id="L128">            levelArray[i] = new Level(layout, foregroundRGB, background, tree, this.parachuteImage);</span>
+<span class="nc" id="L129">            levelArray[i].createTerrain();</span>
+<span class="nc" id="L130">            levelArray[i].smoothTerrain();</span>
+<span class="nc" id="L131">            levelArray[i].smoothTerrain();</span>
+<span class="nc" id="L132">            levelArray[i].createTree();</span>
+<span class="nc" id="L133">            levelArray[i].loadInitialTank(tankRGB, aiRGB);</span>
+<span class="nc" id="L134">            levelArray[i].createPlayerList();</span>
+
+
+<span class="nc bnc" id="L137" title="All 2 branches missed.">            if (i == 0) {</span>
+<span class="nc" id="L138">                this.currentPlayerIndex = 0;</span>
+<span class="nc" id="L139">                this.players = levelArray[i].getPlayers();</span>
+<span class="nc" id="L140">                this.playerCharacters = levelArray[i].getPlayerCharacters();</span>
+<span class="nc" id="L141">                this.currentPlayer = levelArray[i].getCurrentPlayer();</span>
+<span class="nc" id="L142">                this.totalPlayerNum = playerCharacters.size();</span>
+<span class="nc" id="L143">                this.currentPlayerStartTime = millis();</span>
+            }
+
+        }
+
+<span class="nc" id="L148">    }</span>
+
+    /**
+     * Receive key pressed signal from the keyboard.
+     */
+    @Override
+    public void keyPressed(KeyEvent event) {
+
+<span class="nc" id="L156">        int keyPressed = event.getKeyCode();</span>
+
+<span class="nc bnc" id="L158" title="All 15 branches missed.">        switch (keyPressed) {</span>
+
+            case (37):
+                // ArrowLeft
+<span class="nc bnc" id="L162" title="All 2 branches missed.">                if (this.currentPlayer.getX() &gt; 0) {</span>
+<span class="nc" id="L163">                    this.currentPlayer.moveLeft();</span>
+                }
+<span class="nc" id="L165">                System.out.println(&quot;LEFT&quot;);</span>
+<span class="nc" id="L166">                break;</span>
+
+
+            case (39):
+                // ArrowRight
+<span class="nc bnc" id="L171" title="All 2 branches missed.">                if (this.currentPlayer.getX() &lt; WIDTH - 20) {</span>
+<span class="nc" id="L172">                    this.currentPlayer.moveRight();</span>
+                }
+<span class="nc" id="L174">                System.out.println(&quot;RIGHT&quot;);</span>
+
+<span class="nc" id="L176">                break;</span>
+            case (38):
+                // ArrowUp
+<span class="nc bnc" id="L179" title="All 2 branches missed.">                if (this.currentPlayer.getTurret().getRadian() &gt; -PI / 2) {</span>
+<span class="nc" id="L180">                    this.currentPlayer.moveTurretLeft();</span>
+                }
+<span class="nc" id="L182">                System.out.println(&quot;UP&quot;);</span>
+<span class="nc" id="L183">                break;</span>
+
+            case (40):
+                // ArrowDown
+<span class="nc bnc" id="L187" title="All 2 branches missed.">                if (this.currentPlayer.getTurret().getRadian() &lt; PI / 2) {</span>
+<span class="nc" id="L188">                    this.currentPlayer.moveTurretRight();</span>
+                }
+<span class="nc" id="L190">                System.out.println(&quot;Down&quot;);</span>
+<span class="nc" id="L191">                break;</span>
+
+            case (32):
+                // Space
+<span class="nc" id="L195">                this.currentPlayer.stopMove();</span>
+<span class="nc" id="L196">                this.wind.updateWind();</span>
+
+<span class="nc" id="L198">                int countAlive=0;</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">                for (Tank t : players.values()) {</span>
+<span class="nc bnc" id="L200" title="All 2 branches missed.">                    if(!t.isExploded()){</span>
+<span class="nc" id="L201">                        countAlive++;</span>
+                    }
+<span class="nc" id="L203">                }</span>
+<span class="nc bnc" id="L204" title="All 6 branches missed.">                if (countAlive == 1 &amp;&amp; this.currentTurn &lt; this.numOfTurn  &amp;&amp; this.levelArray[this.currentTurn].isLevelOver()){</span>
+<span class="nc" id="L205">                    this.ToNextLevel(countAlive);</span>
+<span class="nc bnc" id="L206" title="All 4 branches missed.">                } else if (countAlive == 1 &amp;&amp; this.currentTurn == this.numOfTurn - 1) {</span>
+<span class="nc" id="L207">                    System.out.println(&quot;Game Over&quot;);</span>
+<span class="nc" id="L208">                    System.out.println(&quot;Winner is: &quot; + this.currentPlayer.getCharacter());</span>
+<span class="nc" id="L209">                    break;</span>
+                }                
+
+<span class="nc bnc" id="L212" title="All 4 branches missed.">                if (this.currentPlayer.isAlive() &amp;&amp; !this.levelArray[this.currentTurn].isLevelOver()){</span>
+<span class="nc bnc" id="L213" title="All 4 branches missed.">                    if (this.currentPlayer.getLastProjectile()!=null &amp;&amp; this.currentPlayer.getLastProjectile().getExplosionRadius() == 30){</span>
+<span class="nc" id="L214">                        this.currentPlayer.addProjectile();</span>
+<span class="nc bnc" id="L215" title="All 2 branches missed.">                    } else if (this.currentPlayer.getLastProjectile() == null){</span>
+<span class="nc" id="L216">                        this.currentPlayer.addProjectile();</span>
+                    } else{
+<span class="nc" id="L218">                        this.currentPlayer.updateLatsProjectileLocation();</span>
+                    }
+                        
+                    
+<span class="nc" id="L222">                    this.currentPlayer.getLevelToProjectile(this.levelArray[this.currentTurn]);</span>
+<span class="nc" id="L223">                    this.currentPlayer.fireProjectile();</span>
+    
+<span class="nc" id="L225">                    this.currentPlayerIndex = (this.currentPlayerIndex + 1) % this.totalPlayerNum;</span>
+    
+<span class="nc" id="L227">                    this.levelArray[this.currentTurn].addProjectile(this.currentPlayer.getLastProjectile());</span>
+                    
+<span class="nc bnc" id="L229" title="All 2 branches missed.">                    if (this.currentPlayer.getLastProjectile().getExplosionRadius() == 60){</span>
+<span class="nc" id="L230">                        this.currentPlayer.getLastProjectile().setExplosionRadius(30);</span>
+                    }
+                }
+
+                // Change windspeed for all players
+<span class="nc" id="L235">                float windSpeed = this.wind.getWindSpeedPerFrame();</span>
+<span class="nc" id="L236">                players.keySet().forEach(key -&gt; {</span>
+<span class="nc" id="L237">                    Tank t = players.get(key);</span>
+<span class="nc" id="L238">                    t.changeProjectileWindSpeed(windSpeed);</span>
+<span class="nc" id="L239">                });</span>
+
+<span class="nc" id="L241">                break;</span>
+            case (87):
+                // w
+<span class="nc bnc" id="L244" title="All 6 branches missed.">                if (currentPlayer.getPower() &lt; 100 &amp;&amp; currentPlayer.getPower() &gt;= 0 &amp;&amp; currentPlayer.getPower() &lt; currentPlayer.getHealth()) {</span>
+<span class="nc" id="L245">                    currentPlayer.powerIncrease();</span>
+                }
+
+<span class="nc" id="L248">                System.out.println(&quot;W&quot;);</span>
+<span class="nc" id="L249">                System.out.println(currentPlayer.getPower());</span>
+
+<span class="nc" id="L251">                break;</span>
+
+            case (83):
+                // s
+<span class="nc bnc" id="L255" title="All 2 branches missed.">                if (currentPlayer.getPower() &gt; 0) {</span>
+<span class="nc" id="L256">                    currentPlayer.powerDecrease();</span>
+                }
+
+<span class="nc" id="L259">                System.out.println(&quot;S&quot;);</span>
+
+<span class="nc" id="L261">                break;</span>
+
+            case (80):
+<span class="nc bnc" id="L264" title="All 2 branches missed.">                if (this.currentPlayer.getScore() &gt;= 15) {</span>
+<span class="nc" id="L265">                    this.currentPlayer.addParachute();</span>
+                }
+                break;
+
+            case (88):
+                //x
+<span class="nc bnc" id="L271" title="All 4 branches missed.">                if (this.currentPlayer.getScore() &gt;= 20 &amp;&amp; this.currentPlayer.getLastProjectile().getExplosionRadius() == 30) {</span>
+<span class="nc" id="L272">                    this.currentPlayer.costScore(20);</span>
+<span class="nc" id="L273">                    this.currentPlayer.addProjectile();</span>
+<span class="nc" id="L274">                    this.currentPlayer.getLastProjectile().setExplosionRadius(60);</span>
+                }
+                break;
+
+            case (82):
+                //r
+<span class="nc bnc" id="L280" title="All 2 branches missed.">                if (this.isGameOver) {</span>
+<span class="nc" id="L281">                    this.currentTurn = 0;</span>
+<span class="nc" id="L282">                    this.setup();</span>
+                } else {
+<span class="nc bnc" id="L284" title="All 2 branches missed.">                    if (this.currentPlayer.getScore() &gt;= 20) {</span>
+<span class="nc" id="L285">                        this.currentPlayer.costScore(20);</span>
+<span class="nc" id="L286">                        this.currentPlayer.increaseHealth();</span>
+                    }
+                }
+
+                break;
+
+            case (70):
+                //f
+
+<span class="nc bnc" id="L295" title="All 2 branches missed.">                if (this.currentPlayer.getScore() &gt;= 10) {</span>
+<span class="nc" id="L296">                    this.currentPlayer.costScore(10);</span>
+<span class="nc" id="L297">                    this.currentPlayer.additionalFuel();</span>
+                }
+
+
+                break;
+
+            case (81):
+                //q
+<span class="nc" id="L305">                System.exit(0);</span>
+<span class="nc" id="L306">                break;</span>
+
+            case (84):
+                //t
+<span class="nc bnc" id="L310" title="All 2 branches missed.">                if (this.currentPlayer.getScore() &gt;= 15) {</span>
+<span class="nc" id="L311">                    this.currentPlayer.costScore(15);</span>
+<span class="nc" id="L312">                    this.currentPlayer.setTeleport(true);</span>
+                }
+                break;
+
+            case (72):
+                //h
+<span class="nc bnc" id="L318" title="All 2 branches missed.">                if (this.currentPlayer.getScore() &gt;= 20) {</span>
+<span class="nc" id="L319">                    this.currentPlayer.costScore(20);</span>
+<span class="nc" id="L320">                    this.currentPlayer.setShield(true);</span>
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        // keyReleased(keyPressed);
+
+<span class="nc" id="L330">    }</span>
+
+    /**
+     * Receive key released signal from the keyboard.
+     */
+    @Override
+    public void keyReleased() {
+        // multiple KeyReleased for specific function
+
+<span class="nc" id="L339">    }</span>
+
+    /**
+     * Handles key release events for game control. This method stops specific actions
+     * of the current player based on the key released.
+     * &lt;p&gt;
+     * - Arrow keys up (38) and down (40): Stop the turret rotation.
+     * - Arrow keys left (37) and right (39): Stop the player movement.
+     * - W (87) and S (83) keys: Stop adjusting the power level.
+     * - Spacebar (32): Records the current time to track the duration of key press.
+     *
+     * @param event the KeyEvent that contains details about the key that was released.
+     */
+    @Override
+    public void keyReleased(KeyEvent event) {
+        // to do something
+<span class="nc" id="L355">        int keyCode = event.getKeyCode();</span>
+<span class="nc bnc" id="L356" title="All 4 branches missed.">        if (keyCode == 38 || keyCode == 40) {</span>
+<span class="nc" id="L357">            this.currentPlayer.getTurret().stopRotation();</span>
+<span class="nc bnc" id="L358" title="All 4 branches missed.">        } else if (keyCode == 37 || keyCode == 39) {</span>
+<span class="nc" id="L359">            this.currentPlayer.stopMove();</span>
+<span class="nc bnc" id="L360" title="All 4 branches missed.">        } else if (keyCode == 87 || keyCode == 83) {</span>
+<span class="nc" id="L361">            this.currentPlayer.stopPower();</span>
+<span class="nc bnc" id="L362" title="All 2 branches missed.">        } else if (keyCode == 32) {</span>
+<span class="nc" id="L363">            this.currentPlayerStartTime = millis();</span>
+        }
+
+<span class="nc" id="L366">    }</span>
+
+
+    /**
+     * Handles mouse press events to activate player power-ups, such as teleportation.
+     * If the current player is alive and able to use teleport, this method will teleport
+     * the player to the clicked location on the screen.
+     * &lt;p&gt;
+     * - Teleportation is performed by setting the player's position to the coordinates
+     * of the mouse click, provided the player has the ability to teleport at that time.
+     *
+     * @param e the MouseEvent that contains details about the mouse button pressed and the
+     *          coordinates of the mouse cursor at the time of the press.
+     */
+    @Override
+    public void mousePressed(MouseEvent e) {
+        //TODO - powerups, like repair and extra fuel and teleport        
+<span class="nc bnc" id="L383" title="All 4 branches missed.">        if (this.currentPlayer.isAlive() &amp;&amp; this.currentPlayer.canUseTeleport()) {</span>
+<span class="nc" id="L384">            float x = e.getX();</span>
+<span class="nc" id="L385">            float y = e.getY();</span>
+<span class="nc" id="L386">            this.currentPlayer.teleport(x, y);</span>
+        }
+<span class="nc" id="L388">    }</span>
+
+
+    /**
+     * Handles mouse release events to stop player power-ups.
+     */
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+<span class="nc" id="L397">    }</span>
+
+    /**
+     * Draw the HUD bar that displays the health and power of the current player.
+     */
+    public void drawHUDbar() {
+<span class="nc" id="L403">        this.textSize(16);</span>
+<span class="nc" id="L404">        int[] tankRGB = this.currentPlayer.getRGB();</span>
+
+
+<span class="nc" id="L407">        int health = this.currentPlayer.getHealth();</span>
+<span class="nc" id="L408">        int power = this.currentPlayer.getPower();</span>
+
+<span class="nc bnc" id="L410" title="All 2 branches missed.">        if (!this.currentPlayer.isAlive()) {</span>
+<span class="nc" id="L411">            health = 0;</span>
+<span class="nc" id="L412">            power = 0;</span>
+        }
+
+<span class="nc" id="L415">        float healthWidth = 150 * (health / 100f);</span>
+<span class="nc" id="L416">        this.strokeWeight(2);</span>
+<span class="nc" id="L417">        this.stroke(0);</span>
+<span class="nc" id="L418">        this.fill(tankRGB[0], tankRGB[1], tankRGB[2]);</span>
+<span class="nc" id="L419">        this.rect(440, 10, healthWidth, 20);</span>
+
+<span class="nc" id="L421">        float powerWidth = 150 * (power / 100f);</span>
+<span class="nc" id="L422">        this.strokeWeight(4);</span>
+<span class="nc" id="L423">        this.stroke(127.5f);</span>
+<span class="nc" id="L424">        this.fill(tankRGB[0], tankRGB[1], tankRGB[2]);</span>
+<span class="nc" id="L425">        this.rect(440, 10, powerWidth, 20);</span>
+
+
+<span class="nc" id="L428">        this.strokeWeight(1);</span>
+<span class="nc" id="L429">        this.stroke(255, 0, 0);</span>
+<span class="nc" id="L430">        this.line(440 + powerWidth, 5, 440 + powerWidth, 35);</span>
+
+
+<span class="nc" id="L433">        this.fill(0, 0, 0);</span>
+<span class="nc" id="L434">        this.text(&quot;Health: &quot;, 380, 25);</span>
+<span class="nc" id="L435">        this.text(health, 595, 25);</span>
+<span class="nc" id="L436">        this.text(&quot;Power: &quot; + power, 380, 50);</span>
+<span class="nc" id="L437">    }</span>
+
+    /**
+     * Draw the player's character and fuel level on the screen.
+     */
+    public void drawPlayerAndFuel() {
+        // Arrow
+<span class="nc bnc" id="L444" title="All 2 branches missed.">        if (!this.currentPlayer.isAlive()) {</span>
+<span class="nc" id="L445">            return;</span>
+        }
+<span class="nc" id="L447">        int duration = 2000;</span>
+<span class="nc bnc" id="L448" title="All 2 branches missed.">        if (millis() - this.currentPlayerStartTime &lt;= duration) {</span>
+<span class="nc" id="L449">            float arrowX = this.currentPlayer.getX() + 10;</span>
+<span class="nc" id="L450">            float arrowY = this.currentPlayer.getY() - 120;</span>
+<span class="nc" id="L451">            this.stroke(0);</span>
+<span class="nc" id="L452">            this.strokeWeight(2);</span>
+<span class="nc" id="L453">            this.line(arrowX, arrowY, arrowX, arrowY + 60);</span>
+
+<span class="nc" id="L455">            this.line(arrowX - 10, arrowY + 40, arrowX, arrowY + 60);</span>
+<span class="nc" id="L456">            this.line(arrowX + 10, arrowY + 40, arrowX, arrowY + 60);</span>
+
+        }
+
+
+<span class="nc" id="L461">        char character = this.currentPlayer.getCharacter();</span>
+<span class="nc" id="L462">        this.fill(0, 0, 0);</span>
+<span class="nc" id="L463">        this.textSize(16);</span>
+<span class="nc" id="L464">        this.text(&quot;Player &quot; + character + &quot;'s turn&quot;, 20, 25);</span>
+
+<span class="nc" id="L466">        int fuel = this.currentPlayer.getFuel();</span>
+<span class="nc" id="L467">        this.image(fuelImage, 160, 5, 25, 25);</span>
+<span class="nc" id="L468">        this.fill(0, 0, 0);</span>
+<span class="nc" id="L469">        this.textSize(16);</span>
+<span class="nc" id="L470">        this.text(fuel, 185, 25);</span>
+
+<span class="nc" id="L472">        int numOfParachutes = this.currentPlayer.getNumOfParachutes();</span>
+<span class="nc" id="L473">        this.image(parachuteImage, 160, 35, 25, 25);</span>
+<span class="nc" id="L474">        this.fill(0, 0, 0);</span>
+<span class="nc" id="L475">        this.textSize(16);</span>
+<span class="nc" id="L476">        this.text(numOfParachutes, 187, 54);</span>
+<span class="nc" id="L477">    }</span>
+
+    /**
+     * Draw the scoreboard that displays the scores of all players in the game.
+     */
+    public void drawScoreboard() {
+<span class="nc" id="L483">        this.textSize(15.5f);</span>
+
+<span class="nc" id="L485">        this.strokeWeight(4);</span>
+<span class="nc" id="L486">        this.stroke(0);</span>
+<span class="nc" id="L487">        this.fill(0, 0, 0, 0);</span>
+<span class="nc" id="L488">        this.rect(720, 50, 135, 20);</span>
+<span class="nc" id="L489">        this.fill(0, 0, 0);</span>
+<span class="nc" id="L490">        this.text(&quot;Scores&quot;, 725, 66.5f);</span>
+
+<span class="nc" id="L492">        float scoreBoardHeight = 20f * (float) this.totalPlayerNum;</span>
+<span class="nc" id="L493">        this.fill(0, 0, 0, 0);</span>
+<span class="nc" id="L494">        this.rect(720, 70, 135, scoreBoardHeight);</span>
+<span class="nc" id="L495">        this.textSize(15);</span>
+<span class="nc bnc" id="L496" title="All 2 branches missed.">        for (int i = 0; i &lt; this.totalPlayerNum; i++) {</span>
+<span class="nc" id="L497">            char character = playerCharacters.get(i);</span>
+<span class="nc" id="L498">            Tank player = players.get(character);</span>
+<span class="nc" id="L499">            int[] tankRGB = player.getRGB();</span>
+<span class="nc" id="L500">            this.fill(tankRGB[0], tankRGB[1], tankRGB[2]);</span>
+<span class="nc" id="L501">            this.text(&quot;Player &quot; + character, 725, 85 + 20 * i);</span>
+<span class="nc" id="L502">            this.fill(0, 0, 0);</span>
+<span class="nc" id="L503">            this.text(player.getScore(), 825, 85 + 20 * i);</span>
+        }
+<span class="nc" id="L505">    }</span>
+
+    /**
+     * Draw the larger projectile that is available for the current player to use.
+     */
+    public void drawLargerProjectile() {
+<span class="nc bnc" id="L511" title="All 4 branches missed.">        if (this.currentPlayer.getLastProjectile() != null &amp;&amp; this.currentPlayer.isAlive()) {</span>
+<span class="nc bnc" id="L512" title="All 2 branches missed.">            if (this.currentPlayer.getLastProjectile().getExplosionRadius() == 60) {</span>
+<span class="nc" id="L513">                this.strokeWeight(0);</span>
+<span class="nc" id="L514">                this.fill(255, 0, 0);</span>
+<span class="nc" id="L515">                this.ellipse(172, 75, 10 * 2, 10 * 2);</span>
+
+<span class="nc" id="L517">                this.fill(255, 165, 0);</span>
+<span class="nc" id="L518">                this.ellipse(172, 75, 5 * 2, 5 * 2);</span>
+
+<span class="nc" id="L520">                this.fill(255, 255, 0);</span>
+<span class="nc" id="L521">                this.ellipse(172, 75, 2 * 2, 2 * 2);</span>
+
+
+<span class="nc" id="L524">                this.fill(0, 0, 0);</span>
+<span class="nc" id="L525">                this.textSize(16);</span>
+<span class="nc" id="L526">                this.text(&quot;Larger projectile next&quot;, 187, 81);</span>
+
+            }
+        }
+
+<span class="nc" id="L531">    }</span>
+
+
+    /**
+     * Transition to the next level of the game.
+     *
+     * @param countAlive the number of players that are still alive in the current level.
+     */
+    public void ToNextLevel(int countAlive) {
+<span class="nc bnc" id="L540" title="All 4 branches missed.">        if (countAlive == 1 &amp;&amp; this.currentTurn &lt; this.numOfTurn) {</span>
+<span class="nc" id="L541">            this.currentTurn++;</span>
+<span class="nc" id="L542">            this.currentPlayerIndex = 0;</span>
+<span class="nc" id="L543">            System.out.println(&quot;Level Over&quot;);</span>
+<span class="nc bnc" id="L544" title="All 2 branches missed.">            if (this.currentTurn &lt; this.levelArray.length) {</span>
+<span class="nc" id="L545">                HashMap&lt;Character, Tank&gt; newPlayers = this.levelArray[this.currentTurn].getPlayers();</span>
+<span class="nc bnc" id="L546" title="All 2 branches missed.">                for (Tank t : newPlayers.values()) {</span>
+<span class="nc bnc" id="L547" title="All 2 branches missed.">                    for (Tank p : players.values()) {</span>
+<span class="nc bnc" id="L548" title="All 2 branches missed.">                        if (t.getCharacter().equals(p.getCharacter())) {</span>
+<span class="nc" id="L549">                            t.setScore(p.getScore());</span>
+                        }
+<span class="nc" id="L551">                    }</span>
+<span class="nc" id="L552">                    t.initializeParachute(this.parachuteImage);</span>
+<span class="nc" id="L553">                }</span>
+<span class="nc" id="L554">                players = newPlayers;</span>
+<span class="nc" id="L555">                playerCharacters = new ArrayList&lt;Character&gt;(players.keySet());</span>
+<span class="nc" id="L556">                this.totalPlayerNum = playerCharacters.size();</span>
+            }
+        }
+<span class="nc" id="L559">    }</span>
+
+    /**
+     * Draw the final scoreboard that displays the final scores of all players in the game.
+     */
+    public void drawFinalScoreboard() {
+<span class="nc" id="L565">        this.textSize(26);</span>
+
+<span class="nc" id="L567">        this.strokeWeight(4);</span>
+<span class="nc" id="L568">        this.stroke(0);</span>
+<span class="nc" id="L569">        this.fill(255, 192, 203, 200);</span>
+<span class="nc" id="L570">        this.rect(242, 150, 380, 40);</span>
+<span class="nc" id="L571">        this.fill(0);</span>
+<span class="nc" id="L572">        this.text(&quot;Final Scores&quot;, 260, 180);</span>
+
+<span class="nc" id="L574">        float scoreBoardHeight = 35f * (float) this.totalPlayerNum;</span>
+<span class="nc" id="L575">        this.fill(255, 192, 203, 200);</span>
+<span class="nc" id="L576">        this.rect(242, 190, 380, scoreBoardHeight);</span>
+<span class="nc" id="L577">        this.textSize(26);</span>
+
+        // TreeMap to store scores in descending order and their corresponding players
+<span class="nc" id="L580">        TreeMap&lt;Integer, ArrayList&lt;Character&gt;&gt; scoreMap = new TreeMap&lt;&gt;(Collections.reverseOrder());</span>
+<span class="nc bnc" id="L581" title="All 2 branches missed.">        for (Tank t : players.values()) {</span>
+<span class="nc" id="L582">            scoreMap.computeIfAbsent(t.getScore(), k -&gt; new ArrayList&lt;&gt;()).add(t.getCharacter());</span>
+<span class="nc" id="L583">        }</span>
+
+
+<span class="nc" id="L586">        int displayIndex = 0;</span>
+<span class="nc bnc" id="L587" title="All 2 branches missed.">        for (Integer score : scoreMap.keySet()) {</span>
+<span class="nc bnc" id="L588" title="All 2 branches missed.">            for (Character character : scoreMap.get(score)) {</span>
+<span class="nc bnc" id="L589" title="All 2 branches missed.">                if (displayIndex &gt;= displayedPlayerCount) {</span>
+<span class="nc" id="L590">                    break;</span>
+                }
+<span class="nc" id="L592">                Tank player = players.get(character);</span>
+<span class="nc" id="L593">                int[] tankRGB = player.getRGB();</span>
+<span class="nc" id="L594">                this.fill(tankRGB[0], tankRGB[1], tankRGB[2]);</span>
+
+<span class="nc bnc" id="L596" title="All 2 branches missed.">                if (displayIndex == 0) {</span>
+<span class="nc" id="L597">                    this.text(&quot;Player &quot; + character + &quot; wins!&quot;, 260, 130);</span>
+                }
+
+<span class="nc" id="L600">                this.text(&quot;Player &quot; + character, 260, 220 + 30 * displayIndex);</span>
+<span class="nc" id="L601">                this.fill(0, 0, 0);</span>
+<span class="nc" id="L602">                this.text(score, 550, 220 + 30 * displayIndex);</span>
+<span class="nc" id="L603">                displayIndex++;</span>
+<span class="nc bnc" id="L604" title="All 2 branches missed.">                if (displayedPlayerCount == totalPlayerNum) {</span>
+<span class="nc" id="L605">                    this.isGameOver = true;</span>
+<span class="nc" id="L606">                    System.out.println(&quot;Game Over: &quot; + isGameOver);</span>
+                }
+<span class="nc" id="L608">            }</span>
+<span class="nc bnc" id="L609" title="All 2 branches missed.">            if (displayIndex &gt;= displayedPlayerCount) {</span>
+<span class="nc" id="L610">                break;</span>
+            }
+<span class="nc" id="L612">        }</span>
+
+        // Update display count based on time delay
+<span class="nc bnc" id="L615" title="All 4 branches missed.">        if (millis() - lastUpdateTime &gt; 700 &amp;&amp; displayedPlayerCount &lt; totalPlayerNum) {</span>
+<span class="nc" id="L616">            displayedPlayerCount++;</span>
+<span class="nc" id="L617">            lastUpdateTime = millis();</span>
+        }
+
+<span class="nc" id="L620">    }</span>
+
+
+    /**
+     * Draw all elements in the game by current frame.
+     */
+    @Override
+    public void draw() {
+
+<span class="nc" id="L629">        this.currentPlayer = players.get(playerCharacters.get(currentPlayerIndex));</span>
+
+
+<span class="nc" id="L632">        this.levelArray[this.currentTurn].draw(this);</span>
+
+
+        //----------------------------------
+        //display HUD:
+        //----------------------------------
+        //TODO
+<span class="nc" id="L639">        this.drawHUDbar();</span>
+<span class="nc" id="L640">        this.drawPlayerAndFuel();</span>
+<span class="nc" id="L641">        this.wind.draw(this);</span>
+<span class="nc" id="L642">        this.drawLargerProjectile();</span>
+
+        //----------------------------------
+        //display scoreboard:
+        //----------------------------------
+        //TODO
+<span class="nc" id="L648">        this.drawScoreboard();</span>
+
+
+        //----------------------------------
+        //----------------------------------
+
+        //TODO: Check user action
+<span class="nc bnc" id="L655" title="All 2 branches missed.">        if (!this.currentPlayer.isAlive()) {</span>
+<span class="nc" id="L656">            this.currentPlayerIndex = (this.currentPlayerIndex + 1) % this.totalPlayerNum;</span>
+<span class="nc" id="L657">            char currentPlayerChara = playerCharacters.get(currentPlayerIndex);</span>
+<span class="nc" id="L658">            this.currentPlayer = players.get(currentPlayerChara);</span>
+        }
+
+<span class="nc" id="L661">        int countAlive = 0;</span>
+<span class="nc bnc" id="L662" title="All 2 branches missed.">        for (Tank t : players.values()) {</span>
+<span class="nc bnc" id="L663" title="All 2 branches missed.">            if (!t.isExploded()) {</span>
+<span class="nc" id="L664">                countAlive++;</span>
+            }
+<span class="nc" id="L666">        }</span>
+
+<span class="nc bnc" id="L668" title="All 4 branches missed.">        if (countAlive == 2 &amp;&amp; this.currentTurn == this.numOfTurn - 1) {</span>
+<span class="nc" id="L669">            this.lastUpdateTime = millis();</span>
+        }
+
+
+<span class="nc bnc" id="L673" title="All 6 branches missed.">        if (countAlive == 1 &amp;&amp; this.currentTurn &lt; this.numOfTurn - 1 &amp;&amp; this.levelArray[this.currentTurn].isLevelOver()) {</span>
+            //delay 1 second
+<span class="nc" id="L675">            delay(1000);</span>
+<span class="nc" id="L676">            this.ToNextLevel(countAlive);</span>
+
+<span class="nc bnc" id="L678" title="All 6 branches missed.">        } else if (countAlive &lt;= 1 &amp;&amp; this.currentTurn == this.numOfTurn - 1 &amp;&amp; this.levelArray[this.currentTurn].isLevelOver()) {</span>
+<span class="nc" id="L679">            this.drawFinalScoreboard();</span>
+<span class="nc" id="L680">            System.out.println(&quot;Game Over&quot;);</span>
+<span class="nc" id="L681">            System.out.println(&quot;Winner is: &quot; + this.currentPlayer.getCharacter());</span>
+        }
+
+<span class="nc" id="L684">    }</span>
+
+    /**
+     * Main method that runs the game application.
+     *
+     * @param args the command line arguments provided to the application.
+     */
+    public static void main(String[] args) {
+<span class="nc" id="L692">        PApplet.main(&quot;Tanks.App&quot;);</span>
+<span class="nc" id="L693">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
