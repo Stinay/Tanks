@@ -24,7 +24,7 @@ Install Gradle within your Java 8 environment, change to the game directory in t
 
 
 
-
+Below are some exemplary screenshots of my game.
 
 ### Initialisation
 <img width="531" alt="Screenshot 2024-09-21 at 7 39 34 PM" src="https://github.com/user-attachments/assets/edafb38e-20ad-4ea8-a4d5-7b7e4c6d126b">
