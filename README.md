@@ -1,6 +1,9 @@
 # Tanks
 This is a prototype of the game 'Tanks' that I developed myself using Gradle and the Processing library for my Java assignment at USYD.
 
+### To Start
+Install Gradle in your Java 8 environment and type `gradle run` in the terminal.
+
 | Keyboard input | Action                                   |
 |----------------|------------------------------------------|
 | UP arrow       | Tank turret moves left                   |
