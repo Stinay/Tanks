@@ -4,6 +4,7 @@ This is a prototype of the game 'Tanks' that I developed myself using Gradle and
 ### To Start
 Install Gradle within your Java 8 environment, change to the game directory in the terminal, and type `gradle run`.
 
+### Instruction
 | Keyboard input | Action                                   |
 |----------------|------------------------------------------|
 | UP arrow       | Tank turret moves left                   |
