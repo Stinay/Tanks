@@ -14,12 +14,12 @@ Install Gradle within your Java 8 environment, change to the game directory in t
 | W              | Turret power increases                   |
 | S              | Turret power decreases                   |
 | SPACEBAR       | Fire a projectile (ends turn)            |
-| R              | Repair kit, cost: 20                     |
-| F              | Additional fuel, cost: 10                |
-| P              | Additional parachute, cost: 15           |
-| X              | Larger projectile, cost: 20              |
-| H              | Shield, cost: 20                         |
-| T              | Teleport, cost: 15                       |
+| R              | Repair kit, cost: 20 scores              |
+| F              | Additional fuel, cost: 10 scores         |
+| P              | Additional parachute, cost: 15 scores    |
+| X              | Larger projectile, cost: 20 scores       |
+| H              | Shield, cost: 20 scores                  |
+| T              | Teleport, cost: 15 scores                |
 | R              | Restart the game after the final result board is shown.|
 
 
