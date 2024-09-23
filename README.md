@@ -20,7 +20,7 @@ Install Gradle within your Java 8 environment, change to the game directory in t
 | X              | Larger projectile, cost: 20              |
 | H              | Shield, cost: 20                         |
 | T              | Teleport, cost: 15                       |
-| R              | Restart the game after the scoreboard shown.|
+| R              | Restart the game after the final result board shown.|
 
 
 
